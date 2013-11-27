@@ -3,7 +3,7 @@ gmail-sender-xenode
 
 **Gmail Sender Xenode** reads its input message context and data, composes an email message based on the input data, and sends the composed email through your gmail account. It leverages the "gmail" Ruby Gem to perform the email operations. The Xenode will read the attachment file from a local temporary folder based on the path and file information specified in the message context that it receives. The Gmail Sender Xenode will take multiple email addresses and send the composed email to every email address specified in the configuration. Email "To", "Subject", and "Body" can all be read from the either the configuration of the Xenode or from values specified within input message context.  
 
-###Configuration file options:###
+###Configuration File Options:###
 * loop_delay: defines number of seconds the Xenode waits before running the Xenode process. Expects a float. 
 * enabled: determines if the xenode process is allowed to run. Expects true/false.
 * debug: enables extra debug messages in the log file. Expects true/false.
@@ -17,10 +17,10 @@ gmail-sender-xenode
 * enabled: false
 * loop_delay: 30
 * debug: false
-* username: jsmith@gmail.com
-* password: abcdef123456
-* email_to: "jdoe@youremaildomain.com,jdoe2@myemaildomain.com"
-* email_subject: Scanned document
+* username: "jsmith@gmaildotcom"
+* password: "abcdef123456"
+* email_to: "jdoe@youremaildomaindotcom,jdoe2@youremaildomaindotcom"
+* email_subject: "Scanned document"
 * email_body: "Hello,\nAttached is a scanned copy of the document under discussion.\nPlease review, Thanks.\n"
 
 ###Example Input:###
