@@ -1,0 +1,13 @@
+---
+enabled: false
+loop_delay: 30
+debug: false
+username: nodallydemo@gmail.com
+password: ABCDE12345
+email_to: info@xenograte.com
+email_subject: Scanned document
+email_body: |
+  Hello,
+  Attached is a scanned copy of the document under discussion.
+  Please review, Thanks.
+   
