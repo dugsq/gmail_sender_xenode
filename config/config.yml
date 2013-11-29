@@ -2,9 +2,9 @@
 enabled: false
 loop_delay: 30
 debug: false
-username: nodallydemo@gmail.com
+username: jsmith@gmaildotcom
 password: ABCDE12345
-email_to: info@xenograte.com
+email_to: jdoe@yourdomaindotcom
 email_subject: Scanned document
 email_body: |
   Hello,
