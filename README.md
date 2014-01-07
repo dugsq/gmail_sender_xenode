@@ -7,25 +7,25 @@ Note: you will need the Xenograte Community Toolkit (XCT) to run this Xenode. Re
 
 ###Configuration File Options:###
 
-* __`loop_delay`___: _Optional_; `Float`
+* __loop_delay__: _Optional_; `Float`
   * defines number of seconds the Xenode waits before running the Xenode process. Expects a float. 
 * __enabled__: _Optional_; `Boolean`
   * determines if the Xenode process is allowed to run. Expects true/false.
-* `debug`: _Optional_; `Boolean`
+* __debug__: _Optional_; `Boolean`
   * enables extra debug messages in the log file. Expects true/false.
-* `username`: _Mandatory_; 
+* __username__: _Mandatory_; 
   * defines your gmail username. Expects a string.
-* `password`: _Mandatory_; 
+* __password__: _Mandatory_; 
   * defines your gmail application access token / password. Expects a string.
-* `to`: _Mandatory_; 
+* __to__: _Mandatory_; 
   * defines the email address to send an email to. Expects a string.
-* `subject`: _Mandatory_; 
+* __subject__: _Mandatory_; 
   * defines the subject of the email to compose. Expects a string.
-* `body`: _Mandatory_; 
+* __body__: _Mandatory_; 
   * defines the body text of the email to compose. Expects a string.
-* `content_type`: _Optional_; String; 
+* __content_type__: _Optional_; String; 
   * 'html' OR 'plain'(default)
-* `file_path`: _Optional_; String OR Array
+* __file_path__: _Optional_; String OR Array
 
 ###Example Configuration File:###
 ```yaml
