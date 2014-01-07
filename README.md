@@ -7,11 +7,11 @@ Note: you will need the Xenograte Community Toolkit (XCT) to run this Xenode. Re
 
 ###Configuration File Options:###
 
-* `loop_delay`: _Optional_; `Float`
+* __`loop_delay`___: _Optional_; `Float`
   * defines number of seconds the Xenode waits before running the Xenode process. Expects a float. 
-* `enabled`: _Optional_; 
+* __`enabled`__: _Optional_; `Boolean`
   * determines if the Xenode process is allowed to run. Expects true/false.
-* `debug`: _Optional_; 
+* `debug`: _Optional_; `Boolean`
   * enables extra debug messages in the log file. Expects true/false.
 * `username`: _Mandatory_; 
   * defines your gmail username. Expects a string.
