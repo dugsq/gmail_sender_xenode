@@ -9,7 +9,7 @@ Note: you will need the Xenograte Community Toolkit (XCT) to run this Xenode. Re
 
 * __`loop_delay`___: _Optional_; `Float`
   * defines number of seconds the Xenode waits before running the Xenode process. Expects a float. 
-* `__enabled__`: _Optional_; `Boolean`
+* __enabled__: _Optional_; `Boolean`
   * determines if the Xenode process is allowed to run. Expects true/false.
 * `debug`: _Optional_; `Boolean`
   * enables extra debug messages in the log file. Expects true/false.
