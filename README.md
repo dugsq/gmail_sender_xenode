@@ -5,30 +5,28 @@ Note: you will need the Xenograte Community Toolkit (XCT) to run this Xenode. Re
 
 **Gmail Sender Xenode** reads its input message context and data, composes an email message based on the input data, and sends the composed email through your gmail account. It leverages the "gmail" Ruby Gem to perform the email operations. The Xenode will read the attachment file from a local temporary folder based on the path and file information specified in the message context that it receives. The Gmail Sender Xenode will take multiple email addresses and send the composed email to every email address specified in the configuration. Email "To", "Subject", and "Body" can all be read from the either the configuration of the Xenode or from values specified within input message context.  
 
-###Configuration File Options:###
+### Configuration Options:
 
-* ___loop_delay___: _Optional_; `Float`
-  * defines number of seconds the Xenode waits before running the Xenode process. Expects a float. 
-* __enabled__: _Optional_; `Boolean`
-  * determines if the Xenode process is allowed to run. Expects true/false.
-* __debug__: _Optional_; `Boolean`
-  * enables extra debug messages in the log file. Expects true/false.
-* __username__: _Mandatory_; 
-  * defines your gmail username. Expects a string.
-* __password__: _Mandatory_; 
-  * defines your gmail application access token / password. Expects a string.
-* __to__: _Mandatory_; 
-  * defines the email address to send an email to. Expects a string.
-* __subject__: _Mandatory_; 
-  * defines the subject of the email to compose. Expects a string.
-* __body__: _Mandatory_; 
-  * defines the body text of the email to compose. Expects a string.
-* __content_type__: _Optional_; String; 
+* **enabled**: *Optional*; `Boolean`
+  * determines if the Xenode process is allowed to run. Default is true.
+* **debug**: *Optional*; `Boolean`
+  * enables extra debug messages in the log file. Default is false.
+* **username**: *Mandatory*; `String`
+  * Gmail account (account email address).
+* **password**: *Mandatory*; `String`
+  * Gmail account password.
+* **to**: *Mandatory*; `String` OR `Array`
+  * email address to send an email to.
+* **subject**: *Mandatory*; `String`
+  * subject of the email.
+* **body**: *Mandatory*; `String`
+  * body text of the email.
+* **content_type**: *Optional*; `String`
   * 'html' OR 'plain'(default)
-* __file_path__: _Optional_; String OR Array
+* **file_path**: *Optional*; `String` OR `Array`
+  * file path for the attachment(s)
 
-
-###Example Configuration File:###
+### Example Configuration File:
 ```yaml
 debug: true
 username: "jsmith@gmaildotcom"
@@ -38,9 +36,9 @@ subject: "Scanned document"
 body: "Hello,\nAttached is a scanned copy of the document under discussion.\nPlease review, Thanks.\n"
 ```
 
-###Example Input:###
+### Example Input:
 * msg.context['file_path']: "tmp_dir/scan1.pdf" 
-* msg.data:  "This string contains the actual body text of the email to be sent."
+* msg.data:  "This string will append to the body text of the email."
 
-###Example Output:###
+### Example Output:
 * The Gmail Sender Xenode does not generate any output.  
