@@ -3,7 +3,7 @@
 # http://opensource.org/licenses/OSL-3.0
 
 # 
-# @version 0.2.0
+# @version 1.0.0
 #
 # Gmail Sender Xenode reads its input message context and data, composes an email message based on the input data, and sends  
 # the composed email through your gmail account. It leverages the "gmail" Ruby Gem to perform the email operations. 
@@ -13,24 +13,23 @@
 # of the Xenode or from values specified within input data context.  
 #
 # Config file options:
-#   loop_delay:         Expected value: a float. Defines number of seconds the Xenode waits before running process(). 
-#   enabled:            Expected value: true/false. Determines if the xenode process is allowed to run.
-#   debug:              Expected value: true/false. Enables extra logging messages in the log file.
-#   username:           Expected value: a string. Defines your gmail username.
-#   password:           Expected value: a string. Defines your gmail application access token / password.
-#   email_to:           Expected value: a string. Defines the email address to send an email to.
-#   email_subject:      Expected value: a string. Defines the subject of the email to compose.
-#   email_body:         Expected value: a string. Defines the body text of the email to compose.
+#   loop_delay:         Optional; Float; Defines number of seconds the Xenode waits before running process(). 
+#   enabled:            Optional; Boolean; Determines if the xenode process is allowed to run.
+#   debug:              Optional; Boolean; Enables extra logging messages in the log file.
+#   username:           Mandatory; String; Defines your gmail username.
+#   password:           Mandatory; String; Defines your gmail application access token / password.
+#   to:                 Mandatory; String OR Array; Defines the email address to send an email to.
+#   subject:            Mandatory; String; Defines the subject of the email to compose.
+#   body:               Mandatory; String; Defines the body text of the email to compose.
+#   content_type:       Optional; String; 'html' OR 'plain'(default)
+#   file_path:          Optional; String OR Array; file path for the attachement(s)
 #
 # Example Configuration File:
-#   enabled: false
-#   loop_delay: 30
-#   debug: false
 #   username: jsmith@gmail.com
 #   password: abcdef123456
-#   email_to: "jdoe@youremaildomain.com,jdoe2@myemaildomain.com"
-#   email_subject: Scanned document
-#   email_body: |
+#   to: "jdoe@youremaildomain.com,jdoe2@myemaildomain.com"
+#   subject: Scanned document
+#   body: |
 #     Hello,
 #     Attached is a scanned copy of the document under discussion.
 #     Please review, Thanks.
@@ -49,104 +48,88 @@ class GmailSenderXenode
   
   def startup
     mctx = "#{self.class}.#{__method__} - [#{@xenode_id}]"
-    
-    begin 
-      
-      @to = @config[:email_to]
-      @subject = @config[:email_subject]
-      @body = @config[:email_body]
-
-    rescue Exception => e
-      do_debug("#{mctx} - ERROR - e.inspect", true)
-    end
   end
   
-  def process_message(msg_in)
+  def process_message(msg)
     mctx = "#{self.class}.#{__method__} - [#{@xenode_id}]"
-
-    if msg_in
-      do_debug("#{mctx} - received msg: #{msg_in.inspect}", true)
-      @body << "\n" if @body.to_s.length > 0
-      @body << msg_in.data if msg_in.data
-      send_the_mail(msg_in)
-    else
-      do_debug("#{mctx} - process_message() called but msg was nil.", true)
-    end
+    do_debug("#{mctx} - received msg: #{msg.inspect}", true)
+    send_email(msg)
   end
   
-  def override_to(msg)
+  def send_email(msg)
     mctx = "#{self.class}.#{__method__} - [#{@xenode_id}]"
-
-    ret_val = ""
-    if msg && msg.context
-      if msg.context['mail'] && msg.context['mail']['to']
-        if msg.context['mail']['to'].is_a?(Array)  
-          msg.context['mail']['to'].each do |mc|
-            ret_val = ", " if ret_val.length > 0
-            ret_val << mc
-          end
-        elsif msg.context['mail']['to'].is_a?(String)
-          ret_val = msg.context['mail']['to']
-        end
-      end
-    end
-    ret_val
-  end
-  
-  def overrride_subject(msg)
-    mctx = "#{self.class}.#{__method__} - [#{@xenode_id}]"
-
-    ret_val = ""
-    if msg && msg.context
-      if msg.context['mail'] && msg.context['mail']['subject']
-        ret_val = msg.context['mail']['subject']
-      end
-    end
-    ret_val
-  end
-  
-  def override_body(msg)
-    mctx = "#{self.class}.#{__method__} - [#{@xenode_id}]"
-
-    ret_val = ""
-    if msg 
-      if msg.context && msg.context['mail'] && msg.context['mail']['body']
-        ret_val = msg.context['mail']['body']
-      end
-    end
-    ret_val
-  end
-  
-  def send_the_mail(msg)
-    mctx = "#{self.class}.#{__method__} - [#{@xenode_id}]"
-    
     begin
+      # default
       
-      to_str = override_to(msg)
-      to_str = @to if to_str.to_s.empty?
+      username = @config[:username]
+      password = @config[:password]
+      to = @config[:to]
+      subject = @config[:subject]
+      body = @config[:body]
+      content_type = @config[:content_type]
+      file_path = @config[:file_path]
       
-      subj = overrride_subject(msg)
-      subj = @subject if subj.to_s.empty?
+      # overwrite
+      
+      to = msg.context['mail']['to'] if msg.context && msg.context['mail'] && msg.context['mail']['to'] && !msg.context['mail']['to'].empty?
+      to = to.join('|') if to.kind_of?(Array)
+      
+      subject = msg.context['mail']['subject'] if msg.context && msg.context['mail'] && msg.context['mail']['subject'] && !msg.context['mail']['subject'].empty?
+      
+      body << "\n" if body.to_s.length > 0
+      body << msg.data if msg.data
+      body = msg.context['mail']['body'] if msg.context && msg.context['mail'] && msg.context['mail']['body'] && !msg.context['mail']['body'].empty?
+      
+      content_type = msg.context['mail']['content_type'] if msg.context && msg.context['mail'] && msg.context['mail']['content_type'] && !msg.context['mail']['content_type'].empty?
+      
+      file_path = msg.context['file_path'] if msg.context && msg.context['file_path'] && !msg.context['file_path'].empty?
+      
+      # begin to send email
+      
+      gmail = Gmail.connect(username, password)
+      do_debug "Hey have I logged in? #{gmail.logged_in?}"
+      do_debug("#{mctx}\nto:#{to.inspect}\nsubject:#{subject.inspect}\nbody:#{body.inspect}\nfile_path:#{file_path.inspect}", true)
+      
+      # Yuan: do NOT use class varibale within the block!!
+      # Yuan: it only allow one type in body, html or plain, it will only choose one
+      # Yuan: if more than 2 content type present, it will use html over plain
+      email = gmail.compose do
+        to "#{to}"
+        subject "#{subject}"
 
-      override_bdy = override_body(msg)
-      body = @body if body.to_s.empty?
-
-      do_debug("#{mctx} - to_str: #{to_str.inspect} subj: #{subj.inspect} body: #{body.inspect}", true)
-      
-      file_path = msg.context['file_path'] if msg.context && msg.context['file_path']
-      
-      Gmail.connect!(@config[:username], @config[:password]) do |gmail|
-        gmail.deliver do |email|
-          email.to       to_str
-          email.subject  subj
-          email.body     body
-          email.add_file file_path unless file_path.to_s.empty?
+        if content_type == "html"
+          html_part do
+            content_type 'text/html; charset=UTF-8'
+            body "#{body}"
+          end
+        else
+          text_part do
+            body "#{body}"
+          end
         end
+        # /if
+
+        if file_path
+          if file_path.kind_of?(Array)
+            file_path.each do |f|
+              add_file "#{f}"
+            end
+          else
+            add_file "#{file_path}"
+          end
+        end
+        # /if
       end
+      # /compose
+
+      email.deliver!
+      gmail.logout
+      do_debug "Hey have I logged out? #{!gmail.logged_in?}"
       
     rescue Exception => e
       do_debug("#{mctx} - ERROR - #{e.inspect} #{e.backtrace[0]}", true)
     end
   end
+  # /send_email
   
 end

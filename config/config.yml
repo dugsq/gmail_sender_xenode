@@ -1,13 +1,12 @@
 ---
-enabled: false
-loop_delay: 30
-debug: false
+debug: true
 username: jsmith@gmaildotcom
 password: ABCDE12345
-email_to: jdoe@yourdomaindotcom
-email_subject: Scanned document
-email_body: |
+to: jdoe@yourdomaindotcom
+subject: Scanned document
+body: |
   Hello,
   Attached is a scanned copy of the document under discussion.
   Please review, Thanks.
-   
+content_type: html
+file: []   
