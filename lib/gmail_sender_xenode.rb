@@ -21,7 +21,7 @@
 #   to:                 Mandatory; String OR Array; Defines the email address to send an email to.
 #   subject:            Mandatory; String; Defines the subject of the email to compose.
 #   body:               Mandatory; String; Defines the body text of the email to compose.
-#   content_type:       Optional; String; 'html' OR 'plain'(default)
+#   content_type:       Optional; String; 'html' OR 'plain'; 
 #   file_path:          Optional; String OR Array; file path for the attachement(s)
 #
 # Example Configuration File:
@@ -42,6 +42,7 @@
 #
 
 require 'gmail'
+require "erb"
 
 class GmailSenderXenode
   include XenoCore::XenodeBase
@@ -59,6 +60,9 @@ class GmailSenderXenode
   def send_email(msg)
     mctx = "#{self.class}.#{__method__} - [#{@xenode_id}]"
     begin
+      # prepare a namespace inctance for erb to bind
+      ns = Namespace.new(msg: msg)
+      
       # default
       
       username = @config[:username]
@@ -75,12 +79,16 @@ class GmailSenderXenode
       to = to.join('|') if to.kind_of?(Array)
       
       subject = msg.context['mail']['subject'] if msg.context && msg.context['mail'] && msg.context['mail']['subject'] && !msg.context['mail']['subject'].empty?
-      
-      body << "\n" if body.to_s.length > 0
-      body << msg.data if msg.data
-      body = msg.context['mail']['body'] if msg.context && msg.context['mail'] && msg.context['mail']['body'] && !msg.context['mail']['body'].empty?
-      
+      subject = ERB.new(subject).result(ns.get_binding)
+       
       content_type = msg.context['mail']['content_type'] if msg.context && msg.context['mail'] && msg.context['mail']['content_type'] && !msg.context['mail']['content_type'].empty?
+      content_type = "html" if !content_type
+      
+      # Yuan: if you want to append message body, use erb template
+      # body << "\n" if body.to_s.length > 0
+      # body << msg.data if msg.data
+      body = msg.context['mail']['body'] if msg.context && msg.context['mail'] && msg.context['mail']['body'] && !msg.context['mail']['body'].empty?
+      body = ERB.new(body).result(ns.get_binding) if (content_type == "html")
       
       file_path = msg.context['file_path'] if msg.context && msg.context['file_path'] && !msg.context['file_path'].empty?
       
@@ -133,3 +141,17 @@ class GmailSenderXenode
   # /send_email
   
 end
+
+
+class Namespace
+  def initialize(hash)
+    hash.each do |key, value|
+      singleton_class.send(:define_method, key) { value }
+    end 
+  end
+
+  def get_binding
+    binding
+  end
+end
+

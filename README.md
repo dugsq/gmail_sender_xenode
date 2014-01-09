@@ -22,7 +22,7 @@ Note: you will need the Xenograte Community Toolkit (XCT) to run this Xenode. Re
 * **body**: *Mandatory*; `String`
   * body text of the email.
 * **content_type**: *Optional*; `String`
-  * 'html' OR 'plain'(default)
+  * 'html' OR 'plain'. Default is 'html'
 * **file_path**: *Optional*; `String` OR `Array`
   * file path for the attachment(s)
 
